@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -15,10 +16,10 @@ public class Rover
     private HardwareMap hwMap;
 
     //Declaration of wheel motors
-    private DcMotor left_front = null;
-    private DcMotor left_rear = null;
-    private DcMotor right_front = null;
-    private DcMotor right_rear = null;
+    private DcMotor left_front;
+    private DcMotor left_rear;
+    private DcMotor right_front;
+    private DcMotor right_rear;
 
     /*
     Declaration of power set to each wheel
@@ -27,7 +28,7 @@ public class Rover
     2 = front right
     3 = rear right
     */
-    private double[] wheelPower;
+    private double[] wheelPower = new double[4];
 
     /*private double frontLeftPower;
     private double rearLeftPower;
@@ -35,13 +36,11 @@ public class Rover
     private double rearRightPower;*/
 
     //Declaration of arm motors
-    private DcMotor clamp_arm1 = null;
-    private DcMotor clamp_arm2 = null;
+    private DcMotor clamp_arm1;
+    private DcMotor clamp_arm2;
 
     //Declaration of arm servos
-    private Servo lander_clamp = null;
-    private Servo unobtanium_turbine = null;
-    private Servo unobtanium_arm = null;
+    private CRServo unobtanium_turbine;
 
     public Rover()
     {}
@@ -60,19 +59,17 @@ public class Rover
         clamp_arm1 = hwMap.get(DcMotor.class, "clamp_arm_1");
         clamp_arm2 = hwMap.get(DcMotor.class, "clamp_arm_2");
 
-        lander_clamp = hwMap.get(Servo.class, "lander_clamp");
-
-        unobtanium_turbine = hwMap.get(Servo.class, "mineral_turbine");
-        unobtanium_arm = hwMap.get(Servo.class, "mineral_arm");
+        unobtanium_turbine = hwMap.get(CRServo.class, "mineral_turbine");
 
         //Sets motors to the correct directions
-        left_front.setDirection(DcMotor.Direction.FORWARD);
-        left_rear.setDirection(DcMotor.Direction.FORWARD);
-        right_front.setDirection(DcMotor.Direction.REVERSE);
-        right_rear.setDirection(DcMotor.Direction.REVERSE);
+        left_front.setDirection(DcMotor.Direction.REVERSE);
+        left_rear.setDirection(DcMotor.Direction.REVERSE);
+        right_front.setDirection(DcMotor.Direction.FORWARD);
+        right_rear.setDirection(DcMotor.Direction.FORWARD);
 
-        clamp_arm1.setDirection(DcMotor.Direction.FORWARD);
-        clamp_arm2.setDirection(DcMotor.Direction.REVERSE);
+        clamp_arm1.setDirection(DcMotor.Direction.REVERSE);
+        clamp_arm2.setDirection(DcMotor.Direction.FORWARD);
+        unobtanium_turbine.setDirection(CRServo.Direction.FORWARD);
 
         //Sets rovers power to 0
         left_front.setPower(0);
@@ -82,8 +79,6 @@ public class Rover
 
         clamp_arm1.setPower(0);
         clamp_arm2.setPower(0);
-
-        wheelPower = new double[4];
 
         /*frontLeftPower = 0;
         rearLeftPower = 0;
@@ -98,9 +93,6 @@ public class Rover
      */
     public void setForwardSpeed(double speed)
     {
-        if(checkStop(speed))
-            stop();
-
         wheelPower[0] = speed;
         wheelPower[1] = speed;
         wheelPower[2] = speed;
@@ -113,7 +105,7 @@ public class Rover
      * Precondition: setForwardSpeed() (and checkStop()) has already been activated
      * Precondition: move() has been activated between uses of this method
      *
-     * @param speed = the speed the wheels will rotate to rotate the robot
+     * @param speed = the speed the wheels will rotate to rotate the robot right
      */
     public void setTurnSpeed(double speed)
     {
@@ -121,25 +113,26 @@ public class Rover
         {
             wheelPower[0] = speed;
             wheelPower[1] = speed;
-            wheelPower[2] = speed;
-            wheelPower[3] = speed;
+            wheelPower[2] = -speed;
+            wheelPower[3] = -speed;
         }
     }
 
     /**
-     * Adds the speed corresponding to right movement on the remote to each wheel motor
+     * Overwrites all speeds defines and sets the speed of each wheel motor individually
+     * Used primarily for testing
      *
-     * Precondition: setForwardSpeed() has already been activated
-     * Precondition: move() has been activated between uses of this method
-     *
-     * @param speed = the speed the wheels will turn to move the robot
+     * @param lfSpeed: speed of left front wheel
+     * @param lrSpeed: speed of left rear wheel
+     * @param rfSpeed: speed of right front wheel
+     * @param rrSpeed: speed of right rear wheel
      */
-    public void setStrafeSpeed(double speed)
+    public void setTestSpeed(double lfSpeed, double lrSpeed, double rfSpeed, double rrSpeed)
     {
-        wheelPower[0] += speed;
-        wheelPower[1] += speed;
-        wheelPower[2] -= speed;
-        wheelPower[3] -= speed;
+        wheelPower[0] = lfSpeed;
+        wheelPower[1] = lrSpeed;
+        wheelPower[2] = rfSpeed;
+        wheelPower[3] = rrSpeed;
     }
 
     /**
@@ -147,10 +140,10 @@ public class Rover
      */
     public void move()
     {
-        right_rear.setPower(wheelPower[0]);
+        left_front.setPower(wheelPower[0]);
         left_rear.setPower(wheelPower[1]);
-        left_front.setPower(wheelPower[2]);
-        right_front.setPower(wheelPower[3]);
+        right_front.setPower(wheelPower[2]);
+        right_rear.setPower(wheelPower[3]);
     }
 
     //Stops the robot by reversing the power of the wheels then setting them to 0
@@ -172,85 +165,30 @@ public class Rover
     }
 
     /**
-     * A method stating whether or not the robot has stopped by comparing the input speed to the prior speeds
-     * @param speed = the input speed from the controllers
-     * @return if speed is 0 and no other speeds are
-     */
-    private boolean checkStop(double speed)
-    {
-        if(speed == 0) {
-            for (double p : wheelPower)
-            {
-                if(p == 0)
-                {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Sets the speeds/locations of the two servos powering the unobtanium arm
+     *  Moves the motors and servos corrosponding to the rover arm
      *
-     * @param inOrOut = Whether the turbine is moving the unobtanium in (1), out (2), or not moving (0)
-     * @param upOrDown = Whether or not the arm is up
+     * @param armPower = The direction the arm is moving (0 = down, 1 = neutral, 2 = up)
+     * @param inOrOut = The direction unobtanuim is being moved by the unobtanium turbine (0 = out, 1 = neutral, 2 = in)
      */
-    private void moveUnobtaniumArm(int inOrOut, boolean upOrDown)
+    public void moveArm(double armPower, int inOrOut)
     {
-         if(upOrDown)
-             unobtanium_arm.setPosition(servoPositions[0]);
-         else
-             unobtanium_arm.setPosition(servoPositions[1]);
+        clamp_arm1.setPower(armPower);
+        clamp_arm2.setPower(armPower);
 
-         if(inOrOut == 0)
-         {
-             //set speed to 0
-         }
-         else
-         {
-             if(inOrOut == 1)
-             {
-                 //set in
-             }
-             else
-             {
-                 //set out
-             }
-         }
-    }
-
-    /**
-     * Moves the motors and servos corrosponding to the lander clamp
-     *
-     * @param upOrDown = The direction of the clamp arm (0 = down, 1 = stopped, 2 = up)
-     * @param onOrOff = Whetner or not the claw is engaged
-     */
-    private void moveClampArm(int upOrDown, boolean onOrOff)
-    {
-        if(upOrDown != 1)
+        if(inOrOut != 1)
         {
-            if(upOrDown > 1)
+            if(inOrOut > 1)
             {
-                clamp_arm1.setPower(LIFT_SPEED);
-                clamp_arm2.setPower(LIFT_SPEED);
+                unobtanium_turbine.setPower(1);
             }
             else
             {
-                clamp_arm1.setPower(-LIFT_SPEED);
-                clamp_arm2.setPower(-LIFT_SPEED);
+                unobtanium_turbine.setPower(-1);
             }
         }
         else
         {
-            clamp_arm1.setPower(0);
-            clamp_arm2.setPower(0);
-        }
-
-        if(onOrOff)
-        {
-            lander_clamp.setPosition(servoPositions[0]);
-            lander_clamp.setPosition(servoPositions[1]);
+            unobtanium_turbine.setPower(0.5);
         }
     }
 }

@@ -68,6 +68,7 @@ public class TeleOop extends OpMode
         // Initialize the rover as an object
 
         rover = new Rover();
+        rover.init(hardwareMap);
 
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
@@ -78,6 +79,8 @@ public class TeleOop extends OpMode
      */
     @Override
     public void init_loop() {
+        telemetry.addData("init", "loop");
+        telemetry.update();
     }
 
     /*
@@ -85,6 +88,8 @@ public class TeleOop extends OpMode
      */
     @Override
     public void start() {
+        telemetry.addData("start", "once");
+        telemetry.update();
         runtime.reset();
     }
 
@@ -101,8 +106,9 @@ public class TeleOop extends OpMode
 
         // POV Mode uses left stick to go forward, and right stick to turn.
         // - This uses basic math to combine motions and is easier to drive straight.
-        double drive = gamepad1.left_stick_y * 0.5;
+        double drive = -gamepad1.left_stick_y * 0.5;
         double turn  = gamepad1.right_stick_x;
+        telemetry.addData("Turn",turn);
 
         //leftPower    = Range.clip(drive + turn, 1.0, -1.0) ;
         //rearLeftPower    = Range.clip(drive + turn, 1.0, -1.0) ;
@@ -111,8 +117,6 @@ public class TeleOop extends OpMode
         rover.setForwardSpeed(drive);
 
         rover.setTurnSpeed(turn);
-
-        rover.setStrafeSpeed(gamepad1.right_trigger - gamepad1.left_trigger);
 
         // Tank Mode uses one stick to control each wheel.
         // - This requires no math, but it is hard to drive forward slowly and keep straight.
@@ -138,15 +142,25 @@ public class TeleOop extends OpMode
         frontRightPower = gamepad1.right_stick_y;
         rearRightPower = gamepad1.right_stick_x;*/
 
-
         // Send calculated power to wheels
         rover.move();
 
-        int inOrOut = 0;
         /*rightRear.setPower(rightPower);
         leftRear.setPower(leftPower);
         leftFront.setPower(leftPower);
         rightFront.setPower(rightPower);*/
+        int inOrOut = 1;
+        if(gamepad2.left_bumper)
+        {
+            inOrOut = 2;
+        }
+        else if(gamepad2.right_bumper)
+        {
+            inOrOut = 0;
+        }
+
+        double clampArmDirection = gamepad2.left_stick_y;
+        rover.moveArm(clampArmDirection, inOrOut);
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
