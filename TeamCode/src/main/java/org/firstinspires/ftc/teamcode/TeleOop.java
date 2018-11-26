@@ -150,11 +150,11 @@ public class TeleOop extends OpMode
         leftFront.setPower(leftPower);
         rightFront.setPower(rightPower);*/
         int inOrOut = 1;
-        if(gamepad2.left_bumper)
+        if(gamepad2.right_bumper)
         {
             inOrOut = 2;
         }
-        else if(gamepad2.right_bumper)
+        else if(gamepad2.left_bumper)
         {
             inOrOut = 0;
         }
