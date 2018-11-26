@@ -83,51 +83,27 @@ public class Autonomous extends LinearOpMode {
 
         // Step through each leg of the path, ensuring that the Auto mode has not been stopped along the way
 
-        //Step 1: Lower the armp
-        robot.moveArm(1, 2);
-
-        // Step 1:  Drive forward for 2 s
-        //drive(FORWARD_SPEED, 2);
-        lowerArm(1.5);
+        //Step 1: Lower the arm
+        robot.setArmLocks(false);
+        robot.moveArm(1, 1);
+        while (opModeIsActive() && (runtime.seconds() < 1.3)) {
+            telemetry.addData("Path", "Leg 1: %2.5f S Elapsed", runtime.seconds());
+            telemetry.update();
+        }
 
         // Step 2:  Spin right for 1.3 seconds
-        //spinRight(TURN_SPEED, 4000);
-        double turnSpeed = 0.1;
-        //robot.setTurnSpeed(turnSpeed);
-
-        // Step 3:  Drive Backwards for 1 Second
-        //drive(-FORWARD_SPEED, 4000);
-
-    }
-
-   public void drive(double power, long time){
-        robot.setForwardSpeed(power);
+        robot.setTurnSpeed(TURN_SPEED);
         robot.move();
         runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < time)) {
+        while (opModeIsActive() && (runtime.seconds() < 1.3)) {
             telemetry.addData("Path", "Leg 1: %2.5f S Elapsed", runtime.seconds());
             telemetry.update();
         }
-        robot.stop();
 
-    }
-
-    /*public void spinRight(double power, long time)){
-
-        robot.get.lef.setPower(power);
-        robot.rightDrive.setPower(power);
-        runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < time)) {
-            telemetry.addData("Path", "Leg 1: %2.5f S Elapsed", runtime.seconds());
-            telemetry.update();
-        }
-    }*/
-
-
-    public void lowerArm(double time) {
-        robot.moveArm(-1, 1);
-
-        while (opModeIsActive() && (runtime.seconds() < time)) {
+        // Step 3:  Drive forward for 2 Seconds
+        robot.setForwardSpeed(FORWARD_SPEED);
+        robot.move();
+        while (opModeIsActive() && (runtime.seconds() < 2.0)) {
             telemetry.addData("Path", "Leg 1: %2.5f S Elapsed", runtime.seconds());
             telemetry.update();
         }

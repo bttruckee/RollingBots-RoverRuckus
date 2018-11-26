@@ -9,16 +9,14 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class Rover
 {
-    private static final double LIFT_SPEED = 5;
-    private static final int[] servoPositions = {0, 180};
+    //Positions of the lock servo (closed, open)
+    private static final int[] lockPositions = {0, 180};
 
     //Declaraton of the hardwaremap object
     private HardwareMap hwMap;
 
     //Declaration of wheel motors
     private DcMotor left_front;
-
-
     private DcMotor left_rear;
     private DcMotor right_front;
     private DcMotor right_rear;
@@ -43,6 +41,7 @@ public class Rover
 
     //Declaration of arm servos
     private CRServo unobtanium_turbine;
+    private Servo armLocks;
 
     public Rover()
     {}
@@ -62,6 +61,7 @@ public class Rover
         clamp_arm2 = hwMap.get(DcMotor.class, "clamp_arm_2");
 
         unobtanium_turbine = hwMap.get(CRServo.class, "mineral_turbine");
+        armLocks = hwMap.get(Servo.class, "lock");
 
         //Sets motors to the correct directions
         left_front.setDirection(DcMotor.Direction.REVERSE);
@@ -72,6 +72,8 @@ public class Rover
         clamp_arm1.setDirection(DcMotor.Direction.REVERSE);
         clamp_arm2.setDirection(DcMotor.Direction.FORWARD);
         unobtanium_turbine.setDirection(CRServo.Direction.FORWARD);
+        armLocks.setDirection(Servo.Direction.FORWARD);
+
 
         //Sets rovers power to 0
         left_front.setPower(0);
@@ -194,5 +196,15 @@ public class Rover
         }
     }
 
-
+    public void setArmLocks(boolean locked)
+    {
+        if(locked)
+        {
+            armLocks.setPosition(lockPositions[0]);
+        }
+        else
+        {
+            armLocks.setPosition(lockPositions[1]);
+        }
+    }
 }

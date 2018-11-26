@@ -57,6 +57,7 @@ public class TeleOop extends OpMode
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
     private Rover rover = null;
+    private boolean isLocked;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -69,6 +70,7 @@ public class TeleOop extends OpMode
 
         rover = new Rover();
         rover.init(hardwareMap);
+        isLocked = true;
 
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
@@ -161,6 +163,17 @@ public class TeleOop extends OpMode
 
         double clampArmDirection = gamepad2.left_stick_y;
         rover.moveArm(clampArmDirection, inOrOut);
+
+        if(gamepad2.dpad_left)
+        {
+            isLocked = false;
+        }
+        else if(gamepad2.dpad_right)
+        {
+            isLocked = true;
+        }
+
+        rover.setArmLocks(isLocked);
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
