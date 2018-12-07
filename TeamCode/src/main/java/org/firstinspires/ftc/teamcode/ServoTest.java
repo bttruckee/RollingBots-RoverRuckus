@@ -29,13 +29,9 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 
 /**
  * This file contains an example of an iterative (Non-Linear) "OpMode".
@@ -51,14 +47,13 @@ import com.qualcomm.robotcore.util.Range;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="TeleOp", group="Iterative Opmode")
-public class TeleOop extends OpMode
+@TeleOp(name="Test", group="Iterative Opmode")
+public class ServoTest extends OpMode
 {
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
     private Rover rover = null;
     private boolean isLocked;
-    private boolean endGame;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -72,7 +67,6 @@ public class TeleOop extends OpMode
         rover = new Rover();
         rover.init(hardwareMap);
         isLocked = true;
-        endGame = false;
 
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
@@ -83,7 +77,8 @@ public class TeleOop extends OpMode
      */
     @Override
     public void init_loop() {
-        telemetry.addData("init", "loop");
+        telemetry.addData("Left Lock", rover.getLockPositions(0));
+        telemetry.addData("Right Lock", rover.getLockPositions(1));
         telemetry.update();
     }
 
@@ -102,91 +97,84 @@ public class TeleOop extends OpMode
      */
     @Override
     public void loop() {
-        if (gamepad1.y) {
-            endGame = true;
-        }
-        telemetry.addData("Endgame", endGame);
-        telemetry.addData("bakc", gamepad1.y);
-        telemetry.update();
+        //double rightPower;
+        //double leftPower;
 
-        if(!endGame) {
-            //double rightPower;
-            //double leftPower;
+        // Choose to drive using either Tank Mode, or POV Mode
+        // Comment out the method that's not used.  The default below is POV.
 
-            // Choose to drive using either Tank Mode, or POV Mode
-            // Comment out the method that's not used.  The default below is POV.
+        // POV Mode uses left stick to go forward, and right stick to turn.
+        // - This uses basic math to combine motions and is easier to drive straight.
+        double drive = -gamepad1.left_stick_y * 0.5;
+        double turn  = gamepad1.right_stick_x;
+        telemetry.addData("Turn",turn);
 
-            // POV Mode uses left stick to go forward, and right stick to turn.
-            // - This uses basic math to combine motions and is easier to drive straight.
-            double drive = -gamepad1.left_stick_y * 0.5;
-            double turn = gamepad1.right_stick_x;
-            telemetry.addData("Turn", turn);
+        //leftPower    = Range.clip(drive + turn, 1.0, -1.0) ;
+        //rearLeftPower    = Range.clip(drive + turn, 1.0, -1.0) ;
+        //frontRightPower  = Range.clip(drive - turn, -1.0, 1.0) ;
+        //rightPower   = Range.clip(drive - turn, -1.0, 1.0) ;
+        rover.setForwardSpeed(drive);
 
-            //leftPower    = Range.clip(drive + turn, 1.0, -1.0) ;
-            //rearLeftPower    = Range.clip(drive + turn, 1.0, -1.0) ;
-            //frontRightPower  = Range.clip(drive - turn, -1.0, 1.0) ;
-            //rightPower   = Range.clip(drive - turn, -1.0, 1.0) ;
-            rover.setForwardSpeed(drive);
+        rover.setTurnSpeed(turn);
 
-            rover.setTurnSpeed(turn);
-
-            // Tank Mode uses one stick to control each wheel.
-            // - This requires no math, but it is hard to drive forward slowly and keep straight.
+        // Tank Mode uses one stick to control each wheel.
+        // - This requires no math, but it is hard to drive forward slowly and keep straight.
 
 
-            /*frontLeftPower  = gamepad1.left_stick_y ;
-            rearLeftPower  = gamepad1.left_stick_y ;
-            frontRightPower = gamepad1.right_stick_y ;
-            rearRightPower = gamepad1.right_stick_y ;
+        /*frontLeftPower  = gamepad1.left_stick_y ;
+        rearLeftPower  = gamepad1.left_stick_y ;
+        frontRightPower = gamepad1.right_stick_y ;
+        rearRightPower = gamepad1.right_stick_y ;
 
-            frontLeftPower += gamepad1.right_trigger;
-            rearLeftPower += -gamepad1.right_trigger;
-            rearRightPower += gamepad1.right_trigger;
-            frontRightPower += -gamepad1.right_trigger;
+        frontLeftPower += gamepad1.right_trigger;
+        rearLeftPower += -gamepad1.right_trigger;
+        rearRightPower += gamepad1.right_trigger;
+        frontRightPower += -gamepad1.right_trigger;
 
-            frontLeftPower += -gamepad1.left_trigger;
-            rearLeftPower += gamepad1.left_trigger;
-            frontRightPower += gamepad1.left_trigger;
-            rearRightPower += -gamepad1.left_trigger;*/
+        frontLeftPower += -gamepad1.left_trigger;
+        rearLeftPower += gamepad1.left_trigger;
+        frontRightPower += gamepad1.left_trigger;
+        rearRightPower += -gamepad1.left_trigger;*/
 
-            /*frontLeftPower = gamepad1.left_stick_y;
-            rearLeftPower = gamepad1.left_stick_x;
-            frontRightPower = gamepad1.right_stick_y;
-            rearRightPower = gamepad1.right_stick_x;*/
+        /*frontLeftPower = gamepad1.left_stick_y;
+        rearLeftPower = gamepad1.left_stick_x;
+        frontRightPower = gamepad1.right_stick_y;
+        rearRightPower = gamepad1.right_stick_x;*/
 
-            // Send calculated power to wheels
-            rover.move();
+        // Send calculated power to wheels
+        rover.move();
 
-            /*rightRear.setPower(rightPower);
-            leftRear.setPower(leftPower);
-            leftFront.setPower(leftPower);
-            rightFront.setPower(rightPower);*/
-            int inOrOut = 1;
-            if (gamepad2.right_bumper) {
-                inOrOut = 2;
-            } else if (gamepad2.left_bumper) {
-                inOrOut = 0;
-            }
-
-            double clampArmDirection = gamepad2.left_stick_y;
-            rover.moveArm(clampArmDirection, inOrOut);
-
-            if (gamepad2.dpad_left) {
-                isLocked = false;
-            } else if (gamepad2.dpad_right) {
-                isLocked = true;
-            }
-
-            rover.setArmLocks(isLocked);
-
-            // Show the elapsed game time and wheel power.
-            telemetry.addData("Status", "Run Time: " + runtime.toString());
-            //telemetry.addData("Motors", "left (%.2f), right (%.2f)", frontLeftPower, rearLeftPower, frontRightPower, rearRightPower);
-        }
-        else
+        /*rightRear.setPower(rightPower);
+        leftRear.setPower(leftPower);
+        leftFront.setPower(leftPower);
+        rightFront.setPower(rightPower);*/
+        int inOrOut = 1;
+        if(gamepad2.right_bumper)
         {
-            rover.moveArm(-0.5, 1);
+            inOrOut = 2;
         }
+        else if(gamepad2.left_bumper)
+        {
+            inOrOut = 0;
+        }
+
+        double clampArmDirection = gamepad2.left_stick_y;
+        rover.moveArm(clampArmDirection, inOrOut);
+
+        if(gamepad2.dpad_left)
+        {
+            isLocked = false;
+        }
+        else if(gamepad2.dpad_right)
+        {
+            isLocked = true;
+        }
+
+        rover.setArmLocks(isLocked);
+
+        // Show the elapsed game time and wheel power.
+        telemetry.addData("Status", "Run Time: " + runtime.toString());
+        //telemetry.addData("Motors", "left (%.2f), right (%.2f)", frontLeftPower, rearLeftPower, frontRightPower, rearRightPower);
     }
 
     /*

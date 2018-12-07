@@ -41,7 +41,8 @@ public class Rover
 
     //Declaration of arm servos
     private CRServo unobtanium_turbine;
-    private Servo armLocks;
+    private Servo armLock_Left;
+    private Servo armLock_Right;
 
     public Rover()
     {}
@@ -61,7 +62,8 @@ public class Rover
         clamp_arm2 = hwMap.get(DcMotor.class, "clamp_arm_2");
 
         unobtanium_turbine = hwMap.get(CRServo.class, "mineral_turbine");
-        armLocks = hwMap.get(Servo.class, "lock");
+        armLock_Left = hwMap.get(Servo.class, "left_lock");
+        armLock_Right = hwMap.get(Servo.class, "right_lock");
 
         //Sets motors to the correct directions
         left_front.setDirection(DcMotor.Direction.REVERSE);
@@ -72,7 +74,8 @@ public class Rover
         clamp_arm1.setDirection(DcMotor.Direction.REVERSE);
         clamp_arm2.setDirection(DcMotor.Direction.FORWARD);
         unobtanium_turbine.setDirection(CRServo.Direction.FORWARD);
-        armLocks.setDirection(Servo.Direction.FORWARD);
+        armLock_Left.setDirection(Servo.Direction.FORWARD);
+        armLock_Right.setDirection(Servo.Direction.REVERSE);
 
 
         //Sets rovers power to 0
@@ -200,11 +203,27 @@ public class Rover
     {
         if(locked)
         {
-            armLocks.setPosition(lockPositions[0]);
+            armLock_Left.setPosition(lockPositions[0]);
+            armLock_Right.setPosition(lockPositions[0]);
         }
         else
         {
-            armLocks.setPosition(lockPositions[1]);
+            armLock_Left.setPosition(lockPositions[1]);
+            armLock_Right.setPosition(lockPositions[1]);
         }
+    }
+
+    /**
+     * Returns the position of the lock servo
+     * @param index the servo in question (0 = left lock, 1 = right lock)
+     * @return the position of the given servo
+     */
+    public double getLockPositions(int index)
+    {
+        if(index == 0)
+        {
+            return armLock_Left.getPosition();
+        }
+        return armLock_Right.getPosition();
     }
 }

@@ -77,6 +77,9 @@ public class Autonomous extends LinearOpMode {
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Status", "Ready to run");    //
         telemetry.update();
+        robot.setArmLocks(true);
+
+        robot.moveArm(-0.5, 1);
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -85,25 +88,41 @@ public class Autonomous extends LinearOpMode {
 
         //Step 1: Lower the arm
         robot.setArmLocks(false);
-        robot.moveArm(1, 1);
-        while (opModeIsActive() && (runtime.seconds() < 1.3)) {
+        robot.moveArm(0, 1);
+        runtime.reset();
+        while (opModeIsActive() && (runtime.seconds() < 4.0)) {
+            telemetry.addData("Path", "Leg 1: %2.5f S Elapsed", runtime.seconds());
+            telemetry.update();
+        }
+        robot.moveArm(0.5,1);
+        while (opModeIsActive() && (runtime.seconds() < .5)) {
             telemetry.addData("Path", "Leg 1: %2.5f S Elapsed", runtime.seconds());
             telemetry.update();
         }
 
-        // Step 2:  Spin right for 1.3 seconds
+        //Step 2: Move forward for 0.1 seconds
+        robot.setForwardSpeed(FORWARD_SPEED);
+        while (opModeIsActive() && (runtime.seconds() < 0.1))
+        {
+            telemetry.addData("Path", "Leg 1: %2.5f S Elapsed", runtime.seconds());
+            telemetry.update();
+        }
+
+        // Step 3:  Spin right for 1.6 seconds
+        robot.moveArm(0, 1);
         robot.setTurnSpeed(TURN_SPEED);
         robot.move();
         runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 1.3)) {
+        while (opModeIsActive() && (runtime.seconds() < 1.5)) {
             telemetry.addData("Path", "Leg 1: %2.5f S Elapsed", runtime.seconds());
             telemetry.update();
         }
 
-        // Step 3:  Drive forward for 2 Seconds
+        // Step 4:  Drive forward for 2 Seconds
         robot.setForwardSpeed(FORWARD_SPEED);
         robot.move();
-        while (opModeIsActive() && (runtime.seconds() < 2.0)) {
+        runtime.reset();
+        while (opModeIsActive() && (runtime.seconds() < 3.0)) {
             telemetry.addData("Path", "Leg 1: %2.5f S Elapsed", runtime.seconds());
             telemetry.update();
         }
