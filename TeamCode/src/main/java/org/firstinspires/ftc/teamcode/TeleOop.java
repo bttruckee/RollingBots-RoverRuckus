@@ -57,6 +57,7 @@ public class TeleOop extends OpMode
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
     private Rover rover = null;
+    private boolean markerLocked;
     private boolean isLocked;
     private boolean endGame;
 
@@ -71,6 +72,7 @@ public class TeleOop extends OpMode
 
         rover = new Rover();
         rover.init(hardwareMap);
+        markerLocked = true;
         isLocked = true;
         endGame = false;
 
@@ -120,6 +122,7 @@ public class TeleOop extends OpMode
             // - This uses basic math to combine motions and is easier to drive straight.
             double drive = -gamepad1.left_stick_y * 0.5;
             double turn = gamepad1.right_stick_x;
+            telemetry.addData("Forward", drive);
             telemetry.addData("Turn", turn);
 
             //leftPower    = Range.clip(drive + turn, 1.0, -1.0) ;
@@ -168,8 +171,19 @@ public class TeleOop extends OpMode
                 inOrOut = 0;
             }
 
+            telemetry.addData("in or out", inOrOut);
+
             double clampArmDirection = gamepad2.left_stick_y;
             rover.moveArm(clampArmDirection, inOrOut);
+
+            if(gamepad1.dpad_left)
+            {
+                markerLocked = false;
+            } else if(gamepad1.dpad_right) {
+                markerLocked = true;
+            }
+
+            rover.setMarkerLocks(markerLocked);
 
             if (gamepad2.dpad_left) {
                 isLocked = false;

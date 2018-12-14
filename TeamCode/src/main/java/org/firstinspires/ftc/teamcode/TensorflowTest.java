@@ -34,8 +34,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 
@@ -51,7 +51,7 @@ import java.util.List;
  * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
  * is explained below.
  */
-@TeleOp(name = "TensorFlow Test", group = "Iterative Opmode")
+@TeleOp(name = "TensorflowTest", group = "Iterative Opmode")
 public class TensorflowTest extends LinearOpMode {
     private static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
     private static final String LABEL_GOLD_MINERAL = "Gold Mineral";
@@ -69,7 +69,7 @@ public class TensorflowTest extends LinearOpMode {
      * Once you've obtained a license key, copy the string from the Vuforia web site
      * and paste it in to your code on the next line, between the double quotes.
      */
-    private static final String VUFORIA_KEY = " -- YOUR NEW VUFORIA KEY GOES HERE  --- ";
+    private static final String VUFORIA_KEY = "AZegfj//////AAABmQNmoBVMo0zDto3oKRR0IQBTqcNe4QTIMjgyj5pswHp6hGZKljACVEbc7HINLow1JONLKQdT0xTegeOJVnUGoMYooS6Hu19LqIASbBdpqVTMerF//aG0yDpBvP3PGmmBPRdeo835qwBs89ilkt0S63DR71PfAMnB6IfU3igzxKdRlH5m4dEcT6kM2ljmBydcJFnw15J4rXShuPEU432dYMBTUsQiXZavuKxrHozhDNccjivM0q48RPTWL2fcSmiM5OU5PR+cs+5xA7mJA5icYCyl9jgSC19gqBW52JTNePJSts4UDGe8DiQCeuR9iGfw3RLLiiBlLXy29AMsNgiXOCQVAS7NWQ4OKL5fwFgUg73J\n";
 
     /**
      * {@link #vuforia} is the variable we will use to store our instance of the Vuforia
@@ -157,7 +157,7 @@ public class TensorflowTest extends LinearOpMode {
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 1");
+        parameters.cameraDirection = CameraDirection.BACK;
 
         //  Instantiate the Vuforia engine
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
