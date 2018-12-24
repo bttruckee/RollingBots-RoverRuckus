@@ -55,6 +55,8 @@ public class ServoTest extends OpMode
     private Rover rover = null;
     private boolean isLocked;
 
+    private int increment;
+
     /*
      * Code to run ONCE when the driver hits INIT
      */
@@ -67,6 +69,10 @@ public class ServoTest extends OpMode
         rover = new Rover();
         rover.init(hardwareMap);
         isLocked = true;
+        increment = 1;
+
+        rover.setArmLocks(true);
+        rover.setMarkerLock(true);
 
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
@@ -77,8 +83,9 @@ public class ServoTest extends OpMode
      */
     @Override
     public void init_loop() {
-        telemetry.addData("Left Lock", rover.getLockPositions(0));
-        telemetry.addData("Right Lock", rover.getLockPositions(1));
+        telemetry.addData("Left Arm", rover.getLockPositions(0));
+        telemetry.addData("Right Arm", rover.getLockPositions(1));
+        telemetry.addData("Marker", rover.getLockPositions(2));
         telemetry.update();
     }
 
@@ -97,84 +104,20 @@ public class ServoTest extends OpMode
      */
     @Override
     public void loop() {
-        //double rightPower;
-        //double leftPower;
+        telemetry.addData("Left Arm", rover.getLockPositions(0));
+        telemetry.addData("Right Arm", rover.getLockPositions(1));
+        telemetry.addData("Marker", rover.getLockPositions(2));
 
-        // Choose to drive using either Tank Mode, or POV Mode
-        // Comment out the method that's not used.  The default below is POV.
-
-        // POV Mode uses left stick to go forward, and right stick to turn.
-        // - This uses basic math to combine motions and is easier to drive straight.
-        double drive = -gamepad1.left_stick_y * 0.5;
-        double turn  = gamepad1.right_stick_x;
-        telemetry.addData("Turn",turn);
-
-        //leftPower    = Range.clip(drive + turn, 1.0, -1.0) ;
-        //rearLeftPower    = Range.clip(drive + turn, 1.0, -1.0) ;
-        //frontRightPower  = Range.clip(drive - turn, -1.0, 1.0) ;
-        //rightPower   = Range.clip(drive - turn, -1.0, 1.0) ;
-        rover.setForwardSpeed(drive);
-
-        rover.setTurnSpeed(turn);
-
-        // Tank Mode uses one stick to control each wheel.
-        // - This requires no math, but it is hard to drive forward slowly and keep straight.
-
-
-        /*frontLeftPower  = gamepad1.left_stick_y ;
-        rearLeftPower  = gamepad1.left_stick_y ;
-        frontRightPower = gamepad1.right_stick_y ;
-        rearRightPower = gamepad1.right_stick_y ;
-
-        frontLeftPower += gamepad1.right_trigger;
-        rearLeftPower += -gamepad1.right_trigger;
-        rearRightPower += gamepad1.right_trigger;
-        frontRightPower += -gamepad1.right_trigger;
-
-        frontLeftPower += -gamepad1.left_trigger;
-        rearLeftPower += gamepad1.left_trigger;
-        frontRightPower += gamepad1.left_trigger;
-        rearRightPower += -gamepad1.left_trigger;*/
-
-        /*frontLeftPower = gamepad1.left_stick_y;
-        rearLeftPower = gamepad1.left_stick_x;
-        frontRightPower = gamepad1.right_stick_y;
-        rearRightPower = gamepad1.right_stick_x;*/
-
-        // Send calculated power to wheels
-        rover.move();
-
-        /*rightRear.setPower(rightPower);
-        leftRear.setPower(leftPower);
-        leftFront.setPower(leftPower);
-        rightFront.setPower(rightPower);*/
-        int inOrOut = 1;
-        if(gamepad2.right_bumper)
+        if(gamepad1.a)
         {
-            inOrOut = 2;
+            rover.setArmLocks(true);
+            rover.setMarkerLock(true);
         }
-        else if(gamepad2.left_bumper)
+        else if(gamepad1.b)
         {
-            inOrOut = 0;
+            rover.setArmLocks(false);
+            rover.setMarkerLock(false);
         }
-
-        double clampArmDirection = gamepad2.left_stick_y;
-        rover.moveArm(clampArmDirection, inOrOut);
-
-        if(gamepad2.dpad_left)
-        {
-            isLocked = false;
-        }
-        else if(gamepad2.dpad_right)
-        {
-            isLocked = true;
-        }
-
-        rover.setArmLocks(isLocked);
-
-        // Show the elapsed game time and wheel power.
-        telemetry.addData("Status", "Run Time: " + runtime.toString());
-        //telemetry.addData("Motors", "left (%.2f), right (%.2f)", frontLeftPower, rearLeftPower, frontRightPower, rearRightPower);
     }
 
     /*

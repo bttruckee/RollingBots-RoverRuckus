@@ -108,8 +108,6 @@ public class TeleOop extends OpMode
             endGame = true;
         }
         telemetry.addData("Endgame", endGame);
-        telemetry.addData("bakc", gamepad1.y);
-        telemetry.update();
 
         if(!endGame) {
             //double rightPower;
@@ -183,7 +181,7 @@ public class TeleOop extends OpMode
                 markerLocked = true;
             }
 
-            rover.setMarkerLocks(markerLocked);
+            rover.setMarkerLock(markerLocked);
 
             if (gamepad2.dpad_left) {
                 isLocked = false;

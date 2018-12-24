@@ -194,7 +194,29 @@ public class Autonomous extends LinearOpMode {
                 }
             }
 
-            // Step 4:  Drive forward for 2 Seconds
+            // Step 5:  Drive forward for 2 Seconds
+            robot.setForwardSpeed(FORWARD_SPEED);
+            robot.move();
+            runtime.reset();
+            while (opModeIsActive() && (runtime.seconds() < 3.0)) {
+                telemetry.addData("Path", "Leg 1: %2.5f S Elapsed", runtime.seconds());
+                telemetry.update();
+            }
+
+            //Step 6: Drop the marker
+            robot.setMarkerLock(false);
+
+            //Step 7: Turn right for 2 seconds
+            robot.setTurnSpeed(TURN_SPEED);
+            robot.move();
+            runtime.reset();
+            while (opModeIsActive() && (runtime.seconds() < 2.0))
+            {
+                telemetry.addData("Path", "Leg 1: %2.5f S Elapsed", runtime.seconds());
+                telemetry.update();
+            }
+
+            // Step 8:  Drive forward for 3 Seconds
             robot.setForwardSpeed(FORWARD_SPEED);
             robot.move();
             runtime.reset();

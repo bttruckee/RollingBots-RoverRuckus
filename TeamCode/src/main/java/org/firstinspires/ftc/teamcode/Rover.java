@@ -44,8 +44,7 @@ public class Rover
     private Servo armLock_Left;
     private Servo armLock_Right;
 
-    private Servo lower_Marker_Lock;
-    private Servo upper_Marker_Lock;
+    private Servo marker_Lock;
 
     public Rover()
     {}
@@ -68,8 +67,7 @@ public class Rover
         armLock_Left = hwMap.get(Servo.class, "left_lock");
         armLock_Right = hwMap.get(Servo.class, "right_lock");
 
-        lower_Marker_Lock = hwMap.get(Servo.class, "lower_marker_lock");
-        upper_Marker_Lock = hwMap.get(Servo.class, "upper_marker_lock");
+        marker_Lock = hwMap.get(Servo.class, "marker_lock");
 
         //Sets motors to the correct directions
         left_front.setDirection(DcMotor.Direction.REVERSE);
@@ -83,8 +81,7 @@ public class Rover
         armLock_Left.setDirection(Servo.Direction.FORWARD);
         armLock_Right.setDirection(Servo.Direction.REVERSE);
 
-        lower_Marker_Lock.setDirection(Servo.Direction.FORWARD);
-        upper_Marker_Lock.setDirection(Servo.Direction.REVERSE);
+        marker_Lock.setDirection(Servo.Direction.FORWARD);
 
 
         //Sets rovers power to 0
@@ -232,21 +229,29 @@ public class Rover
         if(index == 0)
         {
             return armLock_Left.getPosition();
+        }else if(index == 1)
+        {
+            return armLock_Right.getPosition();
+        }else
+        {
+            return marker_Lock.getPosition();
         }
-        return armLock_Right.getPosition();
     }
 
-    public void setMarkerLocks(boolean locked)
+    /**
+     * Sets the position of the marker lock
+     *
+     * @param locked whether or not the lock is closed
+     */
+    public void setMarkerLock(boolean locked)
     {
         if(locked)
         {
-            lower_Marker_Lock.setPosition(lockPositions[0]);
-            upper_Marker_Lock.setPosition(lockPositions[0]);
+            marker_Lock.setPosition(lockPositions[0]);
         }
         else
         {
-            lower_Marker_Lock.setPosition(lockPositions[1]);
-            upper_Marker_Lock.setPosition(lockPositions[1]);
+            marker_Lock.setPosition(lockPositions[1]);
         }
     }
 }
